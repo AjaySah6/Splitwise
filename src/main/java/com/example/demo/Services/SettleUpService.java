@@ -84,7 +84,7 @@ public class SettleUpService {
         /*
          * 1. Get the group from database
          * 2. Get all the expenses that are part of that group
-         * Everything else same as above
+         * 3. Everything else same as above
          */
         Optional<Group> optionalGroup = groupRepository.findById(groupId);
         if(optionalGroup.isEmpty()){
@@ -94,6 +94,6 @@ public class SettleUpService {
         Group group = optionalGroup.get();
         List<Expense> expenses = expenseRepository.findAllByGroup(group);
         List<Transaction> transactions = settleUpStrategy.settle(expenses);
-        return null;
+        return transactions;
     }
 }
