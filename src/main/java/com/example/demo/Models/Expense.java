@@ -17,7 +17,7 @@ public class Expense extends BaseModel {
     @Enumerated(EnumType.ORDINAL)
     private ExpenseType expenseType;
 
-    @ManyToOne
+    @ManyToOne                      //Many Expense belongs to one Group // One group can have many expenses
     private Group group;
 
     private int amount;

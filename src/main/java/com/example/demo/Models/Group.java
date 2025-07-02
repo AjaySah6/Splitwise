@@ -12,11 +12,23 @@ import java.util.List;
 @Setter
 @Entity (name = "usergroup" ) // Change the table name
 public class Group extends BaseModel {
+
     private String name;
 
     @ManyToMany
     private List<User> members;
 
-    @OneToMany (mappedBy = "group")
+    @OneToMany (mappedBy = "group")                     // Bi-directional Mapping, access all expenses from a group
     private List<Expense> expenses;
+
+
+
+
+    public List<Expense> getExpenses() {
+        return expenses;
+    }
+
+    public void setExpenses(List<Expense> expenses) {
+        this.expenses = expenses;
+    }
 }

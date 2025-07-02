@@ -1,11 +1,15 @@
 package com.example.demo.Services;
 
 import com.example.demo.DTOs.Transaction;
+import com.example.demo.Exception.GroupNotFoundException;
 import com.example.demo.Exception.UserNotFoundException;
 import com.example.demo.Models.Expense;
 import com.example.demo.Models.ExpenseUser;
+import com.example.demo.Models.Group;
 import com.example.demo.Models.User;
+import com.example.demo.Repositories.ExpenseRepository;
 import com.example.demo.Repositories.ExpenseUserRepository;
+import com.example.demo.Repositories.GroupRepository;
 import com.example.demo.Repositories.UserRepository;
 import com.example.demo.Strategy.SettleUpStrategy;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,8 @@ public class SettleUpService {
     private SettleUpStrategy settleUpStrategy;
     private UserRepository userRepository;
     private ExpenseUserRepository expenseUserRepository;
+    private GroupRepository groupRepository;
+    private ExpenseRepository expenseRepository;
 
     /*
     public SettleUpService() {
@@ -29,10 +35,12 @@ public class SettleUpService {
      */
 
     // or allow caller to pass strategy if needed
-    public SettleUpService(SettleUpStrategy settleUpStrategy, UserRepository userRepository, ExpenseUserRepository expenseUserRepository) {
+    public SettleUpService(SettleUpStrategy settleUpStrategy, UserRepository userRepository, ExpenseUserRepository expenseUserRepository, GroupRepository groupRepository, ExpenseRepository expenseRepository) {
         this.settleUpStrategy = settleUpStrategy;
         this.userRepository = userRepository;
         this.expenseUserRepository = expenseUserRepository;
+        this.groupRepository = groupRepository;
+        this.expenseRepository = expenseRepository;
     }
 
     public List<Transaction> settleUpUser(Long userId){
@@ -72,13 +80,20 @@ public class SettleUpService {
         return filteredTransactions;
     }
 
-    public List<Transaction> settleUPGroup(Long groupId){
+    public List<Transaction> settleUpGroup(Long groupId){
         /*
          * 1. Get the group from database
          * 2. Get all the expenses that are part of that group
          * Everything else same as above
          */
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+        if(optionalGroup.isEmpty()){
+            throw new GroupNotFoundException("Could not find this Group Id, please enter valid Group Id.");
+        }
 
+        Group group = optionalGroup.get();
+        List<Expense> expenses = expenseRepository.findAllByGroup(group);
+        List<Transaction> transactions = settleUpStrategy.settle(expenses);
         return null;
     }
 }
