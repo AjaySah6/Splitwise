@@ -38,4 +38,20 @@ public class ExpenseUser extends BaseModel {
     public void setExpense(Expense expense) {
         this.expense = expense;
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
 }
