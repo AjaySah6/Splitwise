@@ -1,5 +1,6 @@
 package com.example.demo.Services;
 
+import com.example.demo.DTOs.SettleUpResponseDto;
 import com.example.demo.DTOs.Transaction;
 import com.example.demo.Exception.GroupNotFoundException;
 import com.example.demo.Exception.UserNotFoundException;
@@ -35,7 +36,11 @@ public class SettleUpService {
      */
 
     // or allow caller to pass strategy if needed
-    public SettleUpService(SettleUpStrategy settleUpStrategy, UserRepository userRepository, ExpenseUserRepository expenseUserRepository, GroupRepository groupRepository, ExpenseRepository expenseRepository) {
+    public SettleUpService(SettleUpStrategy settleUpStrategy,
+                           UserRepository userRepository,
+                           ExpenseUserRepository expenseUserRepository,
+                           GroupRepository groupRepository,
+                           ExpenseRepository expenseRepository) {
         this.settleUpStrategy = settleUpStrategy;
         this.userRepository = userRepository;
         this.expenseUserRepository = expenseUserRepository;
@@ -43,7 +48,7 @@ public class SettleUpService {
         this.expenseRepository = expenseRepository;
     }
 
-    public List<Transaction> settleUpUser(Long userId){
+    public SettleUpResponseDto settleUpUser(Long userId){
         /*
         1. fetch user details
         2. get all the list of expense that user is involved in, from DB
@@ -76,11 +81,12 @@ public class SettleUpService {
                 filteredTransactions.add(transaction);
             }
         }
-        //this will give the transactions where our current user is a part of
-        return filteredTransactions;
+
+        // Wrap the transactions in SettleUpResponseDto
+        return new SettleUpResponseDto(filteredTransactions);
     }
 
-    public List<Transaction> settleUpGroup(Long groupId){
+    public SettleUpResponseDto settleUpGroup(Long groupId){
         /*
          * 1. Get the group from database
          * 2. Get all the expenses that are part of that group
@@ -94,6 +100,7 @@ public class SettleUpService {
         Group group = optionalGroup.get();
         List<Expense> expenses = expenseRepository.findAllByGroup(group);
         List<Transaction> transactions = settleUpStrategy.settle(expenses);
-        return transactions;
+
+        return new SettleUpResponseDto(transactions);
     }
 }
